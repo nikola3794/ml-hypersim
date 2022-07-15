@@ -560,15 +560,24 @@ def download_files(args):
 
                 path = os.path.join(args.directory, entry.filename)
 
-                contains_all_words = all(
-                    word in entry.filename for words in args.contains for word in words
-                )
+                # contains_all_words = all(
+                #     word in entry.filename for words in args.contains for word in words
+                # )
+
+                if args.contains:
+                    wanted_file = any(
+                        request in entry.filename for request in args.contains
+                    )
+                else:
+                    wanted_file = True
 
                 if args.list:
-                    if contains_all_words:
+                    # if contains_all_words:
+                    if wanted_file:
                         print(entry.filename)
                 else:
-                    if contains_all_words:
+                    # if contains_all_words:
+                    if wanted_file:
                         if os.path.isfile(path) and not args.overwrite:
                             print("File already exists:", path)
                         else:
@@ -612,6 +621,29 @@ example: print this help text
     parser.add_argument("-l", "--list", action="store_true", help="only list files, do not download")
 
     args = parser.parse_args()
+
+    args.directory = '/srv/beegfs02/scratch/hl_task_prediction/data/data_sets/Hypersim/'
+    args.scene = 'ai_001_001.zip'
+    # here are just the raw hdf5 files, no preview images in the list yet
+    args.contains = [
+        '_detail',
+
+        'color.hdf5',
+        # 'diffuse_illumination.hdf5',
+        # 'diffuse_reflectance.hdf5',
+        # 'residual.hdf5',
+
+        'depth_meters.hdf5',
+        # 'normal_bump_cam.hdf5',
+        # 'normal_bump_world.hdf5',
+        # 'normal_cam.hdf5',
+        'normal_world.hdf5',
+        'position.hdf5',
+        'render_entity_id.hdf5',
+        'semantic.hdf5',
+        'semantic_instance.hdf5',
+        #'tex_coord.hdf5'
+    ]
 
     download_files(args)
 
